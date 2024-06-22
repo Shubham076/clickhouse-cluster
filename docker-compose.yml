@@ -1,0 +1,103 @@
+version: '3.7'
+
+services:
+  clickhouse1:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse1
+    container_name: clickhouse1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./node/1/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - clickhouse1_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: 'test'
+      CLICKHOUSE_USER: 'root'
+      CLICKHOUSE_PASSWORD: 'root'
+    networks:
+      - clickhouse-net
+    depends_on:
+      - clickhouse-keeper-1
+      - clickhouse-keeper-2
+
+  clickhouse2:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse2
+    container_name: clickhouse2
+    volumes:
+      - ./node/2/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - clickhouse2_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: 'default'
+      CLICKHOUSE_USER: 'default'
+      CLICKHOUSE_PASSWORD: ''
+    networks:
+      - clickhouse-net
+    depends_on:
+      - clickhouse-keeper-1
+      - clickhouse-keeper-2
+
+  clickhouse3:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse3
+    container_name: clickhouse3
+    volumes:
+      - ./node/3/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - clickhouse3_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: 'default'
+      CLICKHOUSE_USER: 'default'
+      CLICKHOUSE_PASSWORD: ''
+    networks:
+      - clickhouse-net
+    depends_on:
+      - clickhouse-keeper-1
+      - clickhouse-keeper-2
+
+  clickhouse4:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse4
+    container_name: clickhouse4
+    volumes:
+      - ./node/4/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - clickhouse4_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: 'default'
+      CLICKHOUSE_USER: 'default'
+      CLICKHOUSE_PASSWORD: ''
+    networks:
+      - clickhouse-net
+    depends_on:
+      - clickhouse-keeper-1
+      - clickhouse-keeper-2
+
+  clickhouse-keeper-1:
+    image: "clickhouse/clickhouse-keeper"
+    user: "101:101"
+    hostname: clickhouse-keeper-1
+    container_name: clickhouse-keeper-1
+    volumes:
+      - ./keeper/one/keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
+    networks:
+      - clickhouse-net
+
+  clickhouse-keeper-2:
+    image: "clickhouse/clickhouse-keeper"
+    user: "101:101"
+    hostname: clickhouse-keeper-2
+    container_name: clickhouse-keeper-2
+    volumes:
+      - ./keeper/two/keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
+    networks:
+      - clickhouse-net
+
+networks:
+  clickhouse-net:
+    driver: bridge
+
+volumes:
+  clickhouse1_data:
+  clickhouse2_data:
+  clickhouse3_data:
+  clickhouse4_data:
